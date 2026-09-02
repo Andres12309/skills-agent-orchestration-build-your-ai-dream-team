@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A calm, contributor-friendly overview of team project health.">
+  <title>Project Pulse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div class="dashboard">
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">TEAM OVERVIEW</p>
+        <h1>Project Pulse</h1>
+        <p class="intro">A clear view of where the team is focused, what is moving, and where contributors can help next.</p>
+      </div>
+      <p class="updated-note" aria-label="Dashboard update status"><span class="status-dot" aria-hidden="true"></span>Live team snapshot</p>
+    </header>
+
+    <main id="main-content">
+      <section class="overview" aria-labelledby="overview-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">At a glance</p>
+            <h2 id="overview-heading">Team momentum</h2>
+          </div>
+          <p class="section-description">The essentials, without the noise.</p>
+        </div>
+        <div class="metrics" aria-label="Project overview metrics">
+          <div class="metric">
+            <span class="metric-label">Total projects</span>
+            <strong id="total-projects">—</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">In motion</span>
+            <strong id="active-projects">—</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">High priority</span>
+            <strong id="priority-projects">—</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="projects-section" aria-labelledby="projects-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Workstreams</p>
+            <h2 id="projects-heading">Projects</h2>
+          </div>
+          <p id="project-count" class="project-count" aria-live="polite">Loading projects...</p>
+        </div>
+        <div id="loading-state" class="message-state" role="status">
+          <span class="loading-spinner" aria-hidden="true"></span>
+          <span>Gathering the latest project details...</span>
+        </div>
+        <div id="error-state" class="message-state error-state" role="alert" hidden>
+          <strong>Project details unavailable.</strong>
+          <span>We could not load the team snapshot. Please refresh and try again.</span>
+        </div>
+        <div id="project-grid" class="project-grid" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const grid = document.querySelector("#project-grid");
+    const loadingState = document.querySelector("#loading-state");
+    const errorState = document.querySelector("#error-state");
+    const projectCount = document.querySelector("#project-count");
+
+    function createProjectCard(project) {
+      const card = document.createElement("article");
+      card.className = "project-card";
+
+      const heading = document.createElement("div");
+      heading.className = "card-heading";
+      const title = document.createElement("h3");
+      title.textContent = project.name;
+      const status = document.createElement("span");
+      status.className = "badge status-badge status-" + project.status.toLowerCase().replace(/\s+/g, "-");
+      status.textContent = project.status;
+      heading.append(title, status);
+
+      const summary = document.createElement("p");
+      summary.className = "summary";
+      summary.textContent = project.summary;
+
+      const details = document.createElement("dl");
+      details.className = "card-details";
+      [
+        ["Owner", project.owner],
+        ["Recent activity", project.recentActivity],
+        ["Priority", project.priority]
+      ].forEach(([label, value]) => {
+        const term = document.createElement("dt");
+        term.textContent = label;
+        const description = document.createElement("dd");
+        description.textContent = value;
+        if (label === "Priority") {
+          description.className = "priority priority-" + project.priority.toLowerCase();
+        }
+        details.append(term, description);
+      });
+
+      card.append(heading, summary, details);
+      return card;
+    }
+
+    async function loadProjects() {
+      try {
+        const response = await fetch("project-data.json");
+        if (!response.ok) throw new Error("Project data request failed");
+        const data = await response.json();
+        if (!Array.isArray(data.projects) || data.projects.length === 0) {
+          throw new Error("Project data is empty or malformed");
+        }
+        data.projects.forEach((project) => grid.append(createProjectCard(project)));
+        const activeCount = data.projects.filter((project) => project.status === "In progress").length;
+        const highPriorityCount = data.projects.filter((project) => project.priority === "High").length;
+        document.querySelector("#total-projects").textContent = data.projects.length;
+        document.querySelector("#active-projects").textContent = activeCount;
+        document.querySelector("#priority-projects").textContent = highPriorityCount;
+        projectCount.textContent = data.projects.length + " active workstreams";
+        loadingState.hidden = true;
+      } catch (error) {
+        loadingState.hidden = true;
+        errorState.hidden = false;
+        projectCount.textContent = "Unable to load workstreams";
+        console.error("Unable to load Project Pulse data:", error);
+      }
+    }
+
+    loadProjects();
+  </script>
+</body>
+</html>

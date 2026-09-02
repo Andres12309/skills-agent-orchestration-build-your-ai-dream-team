@@ -1,0 +1,44 @@
+{
+  "projects": [
+    {
+      "name": "Contributor Hub",
+      "owner": "Mona Patel",
+      "status": "In progress",
+      "recentActivity": "Design review - 2h ago",
+      "priority": "High",
+      "summary": "Making it easier for new contributors to find a good first issue and understand the team's working agreements."
+    },
+    {
+      "name": "API Reliability",
+      "owner": "Jordan Lee",
+      "status": "In progress",
+      "recentActivity": "Error budget check - Yesterday",
+      "priority": "High",
+      "summary": "Reducing noisy alerts and tightening service health signals so the team can respond with confidence."
+    },
+    {
+      "name": "Design System Refresh",
+      "owner": "Priya Shah",
+      "status": "Planning",
+      "recentActivity": "Token audit - 3 days ago",
+      "priority": "Medium",
+      "summary": "Creating shared foundations for accessible, consistent interfaces across the team's products."
+    },
+    {
+      "name": "Knowledge Base",
+      "owner": "Alex Morgan",
+      "status": "In progress",
+      "recentActivity": "Migration shipped - 4 days ago",
+      "priority": "Low",
+      "summary": "Consolidating practical guides and decisions so answers are easy to find and simple to keep current."
+    },
+    {
+      "name": "Mobile Onboarding",
+      "owner": "Sam Rivera",
+      "status": "On hold",
+      "recentActivity": "Research synthesis - 1 week ago",
+      "priority": "Medium",
+      "summary": "Improving the first-run experience while the team aligns on the next release window and scope."
+    }
+  ]
+}
